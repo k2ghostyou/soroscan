@@ -20,7 +20,7 @@
   X,
 } from "lucide-react";
 
-type ToastType = "success" | "error" | "info" | "warning";
+export type ToastType = "success" | "error" | "info" | "warning";
 
  interface Toast {
   id: string;
