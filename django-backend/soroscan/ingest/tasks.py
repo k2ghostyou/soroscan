@@ -30,6 +30,7 @@ from django.core.cache import cache
 from django.db.models import Count, F, Max, Min
 from django.utils import timezone
 
+from soroscan.circuit_breaker import execute_with_circuit_breaker
 from soroscan.webhook_signing import build_x_signature_header
 
 from .cache_utils import (
@@ -2010,7 +2011,9 @@ def ingest_latest_events() -> int:
             logger.info("No active contracts to index", extra={})
             return 0
 
-        events_response = server.get_events(
+        events_response = execute_with_circuit_breaker(
+            "horizon",
+            server.get_events,
             start_ledger=int(cursor) if cursor.isdigit() else None,
             filters=[
                 {
